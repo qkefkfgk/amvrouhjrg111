@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отзывы</title>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            line-height: 1.6;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        .container {
+            max-width: 100%;
+            margin: 10px auto;
+            padding: 10px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 12px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            font-weight: 600;
+            opacity: 0;
+            animation: fadeIn 0.5s ease forwards;
+        }
+        .rating-stats {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 0.9em;
+            opacity: 0;
+            animation: fadeIn 0.5s ease forwards 0.2s;
+        }
+        .rating-stats-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .rating-stats-title-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+        .rating-stats-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #333;
+            margin-left: 5px;
+            white-space: nowrap;
+        }
+        .telegram-icon {
+            color: #0088cc;
+            font-size: 1.1em;
+            text-decoration: none;
+            margin-right: 5px;
+            flex-shrink: 0;
+        }
+        .rating-summary {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .rating-stars {
+            color: #ffc107;
+        }
+        .rating-count {
+            color: #6c757d;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+        }
+        .rating-bars {
+            max-width: 180px;
+            margin: 0 auto;
+        }
+        .rating-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 3px;
+            font-size: 0.8em;
+        }
+        .rating-bar-label {
+            width: 20px;
+            text-align: right;
+            margin-right: 5px;
+        }
+        .rating-bar-outer {
+            flex-grow: 1;
+            background-color: #e9ecef;
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .rating-bar-inner {
+            height: 100%;
+            background-color: #4a4a4a;
+            width: 0;
+            transition: width 0.5s ease;
+        }
+        .rating-bar-percent {
+            width: 30px;
+            text-align: left;
+            margin-left: 5px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin: 15px 0 12px;
+            font-size: 1.1em;
+            opacity: 0;
+            animation: fadeIn 0.5s ease forwards 0.4s;
+        }
+        #citySelect {
+            width: 100%;
+            margin-bottom: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+            font-size: 16px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .select2-container--default .select2-selection--single {
+            height: 46px;
+            line-height: 46px;
+            border-color: #ced4da;
+            border-radius: 8px;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 46px;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 44px;
+        }
+        .review {
+            border-bottom: 1px solid #e0e0e0;
+            padding: 20px 0;
+            margin-bottom: 20px;
+            position: relative;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s ease forwards;
+        }
+        .review-header {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 12px;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .username {
+            font-weight: 500;
+            color: #333;
+            margin: 0 8px;
+            font-size: 1em;
+        }
+        .review-meta {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            font-size: 0.85em;
+            color: #6c757d;
+            flex-wrap: wrap;
+        }
+        .city, .date, .rating {
+            display: inline-block;
+            margin-right: 10px;
+            margin-bottom: 5px;
+        }
+        .rating {
+            background-color: #333;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .review-content {
+            margin-top: 8px;
+            font-size: 1em;
+            line-height: 1.6;
+        }
+        .representative-response {
+            background-color: #f8f9fa;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #333;
+            font-size: 0.95em;
+        }
+        .dispute-label {
+            color: #dc3545;
+            font-weight: 500;
+            margin-top: 8px;
+            display: inline-block;
+            padding: 4px 8px;
+            background-color: #fff3f3;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+        .thumbnail {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-top: 10px;
+            pointer-events: none;
+        }
+        .full-img {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        .full-img.show {
+            opacity: 1;
+        }
+        .full-img img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            pointer-events: none;
+        }
+        .fa-user, .fa-telegram {
+            color: #333;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .select2-search__field::placeholder {
+            color: #999;
+            font-style: italic;
+        }
+        .secure-connection {
+            position: fixed;
+            top: 5px;
+            left: 5px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 3px 6px;
+            border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            font-size: 11px;
+            z-index: 1000;
+        }
+        .secure-connection .shield {
+            margin-right: 4px;
+            width: 14px;
+            height: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .secure-connection .shield i {
+            font-size: 14px;
+            color: #000;
+        }
+        .secure-connection .connection-status {
+            margin-right: 4px;
+            width: 14px;
+            height: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .secure-connection .connection-status i {
+            font-size: 14px;
+            color: #000;
+        }
+        @keyframes fadeInCheck {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        .no-reviews-message {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 10px 12px;
+            border-radius: 6px;
+            margin-top: 12px;
+            text-align: center;
+            font-size: 0.9em;
+            border: 1px solid #ffeeba;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .no-reviews-message p {
+            margin: 0;
+            line-height: 1.4;
+        }
+        .no-reviews-message::before {
+            content: '\f071';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            margin-right: 6px;
+            color: #856404;
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+    <div class="secure-connection">
+        <div class="shield">
+            <i class="fas fa-shield-alt"></i>
+        </div>
+        <div class="connection-status">
+            <i class="icon fas fa-spinner fa-spin"></i>
+        </div>
+        <span>Защищенное соединение TOR</span>
+    </div>
+
+    <div class="container">
+        <h1>Отзывы</h1>
+        <div class="rating-stats">
+            <div class="rating-stats-header">
+                <div class="rating-stats-title-wrapper">
+                    <a href="https://t.me/WorkGCGgbot" class="telegram-icon" target="_blank">
+                        <i class="fab fa-telegram"></i>
+                    </a>
+                    <div class="rating-stats-title">@WorkGCGgbot</div>
+                </div>
+            </div>
+            <div class="rating-summary">
+                4.99 <span class="rating-stars">★★★★★</span>
+            </div>
+            <p class="rating-count">Оценило 9000+ человек</p>
+            <div class="rating-bars">
+                <div class="rating-bar">
+                    <span class="rating-bar-label">5★</span>
+                    <div class="rating-bar-outer">
+                        <div class="rating-bar-inner" style="width: 0%;"></div>
+                    </div>
+                    <span class="rating-bar-percent">98%</span>
+                </div>
+                <div class="rating-bar">
+                    <span class="rating-bar-label">4★</span>
+                    <div class="rating-bar-outer">
+                        <div class="rating-bar-inner" style="width: 0%;"></div>
+                    </div>
+                    <span class="rating-bar-percent">1%</span>
+                </div>
+                <div class="rating-bar">
+                    <span class="rating-bar-label">3★</span>
+                    <div class="rating-bar-outer">
+                        <div class="rating-bar-inner" style="width: 0%;"></div>
+                    </div>
+                    <span class="rating-bar-percent">0%</span>
+                </div>
+                <div class="rating-bar">
+                    <span class="rating-bar-label">2★</span>
+                    <div class="rating-bar-outer">
+                        <div class="rating-bar-inner" style="width: 0%;"></div>
+                    </div>
+                    <span class="rating-bar-percent">0%</span>
+                </div>
+                <div class="rating-bar">
+                    <span class="rating-bar-label">1★</span>
+                    <div class="rating-bar-outer">
+                        <div class="rating-bar-inner" style="width: 0%;"></div>
+                    </div>
+                    <span class="rating-bar-percent">1%</span>
+                </div>
+            </div>
+        </div>
+        <p class="subtitle">Выберите город</p>
+        <select id="citySelect"></select>
+        <div id="reviewsContainer"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        const jsonFileUrl = 'https://qkefkfgk.github.io/egwegweg/data.json';
+        const cities = ["Адлер", "Азов", "Аксай", "Анапа", "Ангарск", "Армавир", "Афипский", "Ачинск", "Астрахань", "Балаково", "Батайск", "Белореченск", "Биробиджан", "Благовещенск", "Братск", "Валуйки", "Владикавказ", "Волгодонск", "Волжский", "Вологда", "Воронеж", "Гданьск", "Геленджик", "Дербент", "Динская (станица)", "Донецк", "Ейск", "Екатеринбург", "Екатерининская", "Иноземцево", "Иркутск", "Ивановская", "Избербаш", "Казань", "Калининград", "Каспийск", "Кемерово", "Керчь", "Кизляр", "Колпино", "Копейск", "Кострома", "Краснодар", "Красный Сулин", "Кущёвская (станица)", "Луганск", "Махачкала", "Минусинск", "Михайловск", "Моздок", "Москва", "Назрань", "Нальчик", "Невинномысск", "Нижнеудинск", "Новая Адыгея", "Новороссийск", "Новосибирск", "Новочеркасск", "Омск", "Оренбург", "Пермь", "Прохладный", "Пятигорск", "Ростов", "Ростов-на-Дону", "Салехард", "Сальск", "Самара", "Санкт-Петербург", "Саранск", "Саратов", "Светлоград", "Симферополь", "Славянск-на-Кубани", "Сочи", "Ставрополь", "Стерлитамак", "Старомарьевка", "Сызрань", "Таганрог", "Тамбов", "Тверь", "Тимашевск", "Тихорецк", "Томск", "Троицкая", "Туапсе", "Тюмень", "Улан-Удэ", "Урай", "Усолье-Сибирское", "Усть-Илимск", "Устье (Псковская область)", "Устье (Устьянский район)", "Уфа", "Хасавюрт", "Хвалынск", "Хомутово", "Челябинск", "Черемхово", "Черкесск", "Чита", "Чунский", "Шахты", "Шахтёрск", "Якутск", "Ярославль"]
+
+        $(document).ready(function() {
+            $('#citySelect').select2({
+                data: cities.map(city => ({ id: city, text: city })),
+                placeholder: "Введите название города...",
+                allowClear: true,
+                language: {
+                    noResults: function() {
+                        return "Город не найден";
+                    }
+                }
+            });
+
+            $('.select2-search__field').attr('placeholder', 'Введите название города...');
+
+            $('#citySelect').on('select2:open', function() {
+                $('.select2-search__field').attr('placeholder', 'Введите название города...');
+            });
+
+            setTimeout(() => {
+                $('.rating-bar-inner').each(function() {
+                    $(this).css('width', $(this).parent().next().text());
+                });
+            }, 500);
+
+            fetch(jsonFileUrl)
+                .then(response => response.text())
+                .then(text => {
+                    console.log("Raw response:", text);
+                    return JSON.parse(text);
+                })
+                .then(data => {
+                    $('#citySelect').on('change', function() {
+                        const selectedCity = $(this).val();
+                        const filteredReviews = data.filter(item => item.city === selectedCity);
+                        displayReviews(filteredReviews);
+                    });
+
+                    displayReviews(data);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    $('#reviewsContainer').html('<div class="no-reviews-message"><p>В этом городе отзывы скрыты в целях безопасности и доступны только для пользователей с min. 1 заказом. Пожалуйста, выберите другой город.</p></div>');
+                });
+
+            setTimeout(() => {
+                $('.secure-connection .connection-status .icon')
+                    .removeClass('fa-spinner fa-spin')
+                    .addClass('fa-check')
+                    .css({
+                        'opacity': '0',
+                        'animation': 'fadeInCheck 0.5s ease forwards'
+                    });
+            }, 2000);
+        });
+
+        function displayReviews(reviews) {
+            const container = $('#reviewsContainer');
+            container.empty();
+
+            if (reviews.length === 0) {
+                container.html('<div class="no-reviews-message"><p>В этом городе отзывы скрыты в целях безопасности и доступны только для пользователей с min. 1 заказом. Пожалуйста, выберите другой город.</p></div>');
+                return;
+            }
+
+            const currentDate = new Date();
+
+            const filteredReviews = reviews
+                .filter(review => {
+                    const reviewDate = parseDate(review.date);
+                    return reviewDate <= currentDate;
+                })
+                .sort((a, b) => {
+                    const dateB = parseDate(b.date);
+                    const dateA = parseDate(a.date);
+                    return dateB - dateA;
+                });
+
+            filteredReviews.forEach((review, index) => {
+                const reviewElement = $(`
+                    <div class="review" style="animation-delay: ${index * 0.1}s;">
+                        <div class="review-header">
+                            <div class="user-info">
+                                <i class="fas fa-user"></i>
+                                <span class="username">${review.username}</span>
+                                <i class="fab fa-telegram"></i>
+                            </div>
+                            <div class="review-meta">
+                                <span class="city">${review.city}</span>&nbsp;&nbsp;<span class="date">${review.date}</span>&nbsp;&nbsp;<span class="rating">${review.rating}</span>
+                            </div>
+                        </div>
+                        <div class="review-content">${review.review}</div>
+                        ${review.isDispute === "true" ? '<p class="dispute-label">Отзыв оставлен после диспута</p>' : ''}
+                        ${review.photo ? `<img src="${review.photo}" alt="Фото отзыва" class="thumbnail">` : ''}
+                        ${review.representativeResponse ? `
+                            <div class="representative-response">
+                                <strong>Ответ:</strong> ${review.representativeResponse}
+                            </div>
+                        ` : ''}
+                    </div>
+                `);
+
+                container.append(reviewElement);
+            });
+
+            $('.thumbnail').on('click', function(e) {
+                e.preventDefault();
+            });
+        }
+
+        function parseDate(dateString) {
+            const [datePart, timePart] = dateString.split(' ');
+            const [day, month, year] = datePart.split('/');
+            const [hour, minute] = timePart.split(':');
+            return new Date(2000 + parseInt(year), month - 1, day, hour, minute);
+        }
+
+        // Защита от копирования
+        document.addEventListener('copy', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        document.addEventListener('selectstart', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        document.addEventListener('dragstart', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        // Отключение контекстного меню
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+    </script>
+</body>
+</html>
